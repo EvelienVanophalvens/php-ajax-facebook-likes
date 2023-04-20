@@ -24,12 +24,39 @@
 	<article>
 		<p><?php echo $post->text; ?></p>
 		<img src="https://picsum.photos/300/200?random=<?php echo rand(1, 10000); ?>" alt="">
-		<div><a href="#" data-id="<?php echo $post->id; ?>" class="like">Like</a> <span class='likes'><?php echo $post->getLikes(); ?></span> people like this </div>
+		<div><a href="#" data-id="<?php echo $post->id; ?>" class="like">Like</a> <span class='likes' id = "counter<?php echo $post->id; ?>" ><?php echo $post->getLikes(); ?></span> people like this </div>
 	</article>
 	<?php endforeach; ?>
 
 
+<script>
+	//add click event to a.like
+	let likes = document.querySelectorAll('a.like');
+	for(let i = 0; i < likes.length; i++){
+		likes[i].addEventListener('click', function(e){
+			e.preventDefault();
+			//get the id of the post
+			let id = this.getAttribute('data-id');
+			//get the counter
+			let counter = document.querySelector('#counter' + id);
+			//fetch request (post) to '/ajax/like.php', use formdata
+			let formData = new FormData();
+			formData.append('postId', id);
+			fetch('ajax/like.php', {
+				method: 'POST',
+				body: formData
+			})
+			.then(function(response){
+				return response.json();
+			})
+			.then(function(data){
+				//update the counter
+				counter.innerHTML = data.likes;
+			})
+		});
+	}
 
+</script>
 
 </body>
 </html>
